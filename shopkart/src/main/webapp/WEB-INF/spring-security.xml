@@ -1,0 +1,45 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd">
+	
+	<beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	<http pattern="/resources/**" security="none" />
+	
+	<http>
+		<!-- Only ADMIN access -->
+		<intercept-url pattern="/manage/**" access="hasAuthority('ADMIN')" />
+		<!-- Only USER access (who is registered) -->
+		<intercept-url pattern="/cart/**" access="hasAuthority('USER')" />
+		<!-- Rest of the world access -->
+		<intercept-url pattern="/**" access="permitAll" />
+		<form-login login-page="/login" />
+		<access-denied-handler error-page="/access-denied" />
+		
+		<!-- Use in case of Authority(Authorization) -->
+		<!-- <intercept-url pattern="/**" access="hasRole('USER')" /> -->
+		
+		<!-- For CSRF Protection (Not Recommanded)-->
+		<!-- <csrf disabled="true" /> -->
+		<!-- Should be removed because of CSRF Protection -->
+		<!-- <logout /> -->
+	</http>
+	
+	<authentication-manager>
+	<authentication-provider>
+		<password-encoder ref="passwordEncoder" />
+		<user-service>
+		<!-- Password is prefixed with {noop} to indicate to DelegatingPasswordEncoder that
+		NoOpPasswordEncoder should be used. This is not safe for production, but makes reading
+		in samples easier. Normally passwords should be hashed using BCrypt -->
+		<!-- Use in case of Role(Authentication) -->
+		<!-- <user name="Hrithik" password="12345" authorities="ROLE_USER, ROLE_ADMIN" /> -->
+		
+		<user name="Hrithik" password="12345" authorities="USER, ADMIN" />
+		</user-service>
+	</authentication-provider>
+	</authentication-manager>
+</beans:beans>
